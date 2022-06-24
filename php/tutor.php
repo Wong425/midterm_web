@@ -6,9 +6,20 @@ if (isset($_SESSION['sessionid'])) {
     $user_email = "guest@mytutor.com";
 }
 include_once("db_connect.php");
+$sqltutors = "SELECT * FROM tbl_tutors";
+
      $sqltutors = "SELECT * FROM tbl_tutors";
+     if (isset($_GET['submit'])) {
+        $operation = $_GET['submit'];
+     if ($operation == 'search') {
+        $search = $_GET['search'];
+        $sqltutors = "SELECT * FROM tbl_tutors WHERE tutor_name LIKE '%$search%'";
 
-
+    }
+}
+ else {
+    $sqltutors = "SELECT * FROM tbl_tutors";
+}
      $results_per_page = 10;
      if (isset($_GET['pageno'])) {
           $pageno = (int)$_GET['pageno'];
@@ -56,6 +67,25 @@ function truncate($string, $length, $dots = "...") {
         font-family: Arial, Helvetica, sans-serif;
         background-image: url("1.png");
     }
+    input[type=text] {
+        width: 130px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+        background-image: url('searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+    }
+
+    input[type=text]:focus {
+        width: 100%;
+    }
+
     </style>
 </head>
 
@@ -76,6 +106,23 @@ function truncate($string, $length, $dots = "...") {
             <div>Welcome <?php echo $user_email ?></div>
 
         </div>
+    </div>
+    <div class="w3-card w3-container w3-padding w3-margin w3-round">
+        <h3 class="w3-center">Tutor Search</h3>
+        <form>
+            <div class="w3-row">
+                <div class="w3-rest" style="padding-right:4px">
+                    <input class="w3-hover-pale-yellow" type="text" name="search" placeholder="Search by name..">
+                </div>
+
+            </div>
+            <div>
+            <button class="w3-button w3-topbar w3-bottombar w3-border-brown w3-hover-pale-yellow w3-right" type="submit" name="submit"
+                value="search">search</button></p>
+                </div>
+    </div>
+    </form>
+
     </div>
     <div class="w3-grid-template">
         <?php

@@ -7,7 +7,25 @@ if (isset($_SESSION['sessionid'])) {
 }
 include_once("db_connect.php");
      $sqlcourses = "SELECT * FROM tbl_subjects";
-
+     if (isset($_GET['submit'])) {
+        $operation = $_GET['submit'];
+     if ($operation == 'search') {
+        $search = $_GET['search'];
+        $option = $_GET['option'];
+        if ($option == "Select") {
+            $sqlcourses = "SELECT * FROM tbl_subjects WHERE subject_name LIKE '%$search%'";
+        } else if($option == "lower100") {
+            $sqlcourses = "SELECT * FROM tbl_subjects WHERE subject_price BETWEEN 0 AND 99";
+        }else if($option == "100to200") {
+            $sqlcourses = "SELECT * FROM tbl_subjects WHERE subject_price BETWEEN 100 AND 200";
+        }else if($option == "200above") {
+            $sqlcourses = "SELECT * FROM tbl_subjects WHERE subject_price BETWEEN 201 AND 500";
+        }
+    }
+}
+ else {
+    $sqlcourses = "SELECT * FROM tbl_subjects";
+}
 
      $results_per_page = 10;
      if (isset($_GET['pageno'])) {
@@ -57,6 +75,25 @@ function truncate($string, $length, $dots = "...") {
         font-family: Arial, Helvetica, sans-serif;
         background-image: url("1.png");
     }
+
+    input[type=text] {
+        width: 130px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+        background-image: url('searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+    }
+
+    input[type=text]:focus {
+        width: 100%;
+    }
     </style>
 </head>
 
@@ -78,6 +115,29 @@ function truncate($string, $length, $dots = "...") {
 
         </div>
     </div>
+    <div class="w3-card w3-container w3-padding w3-margin w3-round">
+        <h3 class="w3-center">Subject Search</h3>
+        <form>
+            <div class="w3-row">
+                <div class="w3-rest" style="padding-right:4px">
+                    <input class="w3-hover-pale-yellow" type="text" name="search" placeholder="Search..">
+                </div>
+                <div class="w3-rest" style="padding-right:4px">
+                    <p> <select class="w3-input w3-hover-pale-yellow w3-block w3-round w3-border" name="option">
+                            <option value="Select" selected>Select</option>
+                            <option value="lower100">Lower than RM100</option>
+                            <option value="100to200">Between RM100 & RM200</option>
+                            <option value="200above">RM200 above</option>
+                        </select>
+                    </p>
+                </div>
+            </div>
+            <button class="w3-button w3-topbar w3-bottombar w3-border-brown w3-hover-pale-yellow w3-right" type="submit" name="submit"
+                value="search">search</button></p>
+    </div>
+    </form>
+
+    </div>
     <div class="w3-grid-template">
         <?php
         $i = 0;
@@ -92,13 +152,11 @@ function truncate($string, $length, $dots = "...") {
             $srate = $courses['subject_rating'];
             echo "<div class='w3-card-4 w3-round' style='margin:4px'>
             <header class='w3-container w3-brown'><h5><b>$cname</b></h5></header>";
-            echo "<a href='indexphp.php?cid=$cid' style='text-decoration: none;'> <img class='w3-image' src=../resources/courses/$cid.png" .
+            echo "<button class='w3-rest'><a href='details.php?submit=details&cid=$cid' style='text-decoration: none;'> <img class='w3-image' src=../resources/courses/$cid.png" .
                 " onerror=this.onerror=null;this.src='../resouces/profile.jpg'"
                 . " style='width:100%;height:250px'></a><hr>";
             echo "<div class='w3-container'><p>Descripton: $cdesc<br>Price: RM $cprice<br>Tutor ID: $tid
             <br>Sessions: $sses<br>Rating: $srate<br><div class='w3-button w3-brown w3-round w3-block' onClick='addCart($tid)'>Add to Cart</div></p></div>
-            
-
             </div>";
         }
         ?>
